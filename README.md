@@ -19,7 +19,7 @@ Este proyecto utiliza redes neuronales LSTM (Long Short-Term Memory) para predec
 
 Asegurese de tener instalado: **Python 3.x**
 
-Una vez con el proyecto clonado y abierto en un editor de codigo proceda a instalar las dependencias necesarias.
+Clone el repositorio y una vez abierto en un editor de codigo proceda a instalar las dependencias necesarias.
 Para ello haga lo siguiente:
 - Abra una terminal de comando
 - Asegurese que la terminal se encuentre en el directorio del proyecto
