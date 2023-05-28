@@ -5,19 +5,15 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
 
-def visualizar(real, prediccion):
-    plt.plot(real[0:len(prediccion)], color='red', label='Precio maximo real de la accion')
-    plt.plot(prediccion, color='blue', label='Prediccion de la accion')
-    plt.xlabel('Tiempo')
-    plt.ylabel('Precio de la accion')
-    plt.legend()
-    plt.show()
 
-"""LECTURA DE LOS DATOS (MI ARCHIVO EXCEL)--->MI CAMPO FECHA SERÁ EL INDICE DE LA TABLA Y POR ESO SE PARSEA"""
+"""SE LEE EL ARCHIVO EXCEL USANDO PANDAS (ARCHIVO EXCEL)--->EL CAMPO 'FECHA' SERÁ EL INDICE DE LA TABLA Y POR ESO SE PARSEA"""
 dataset = pd.read_csv('AMZN.csv', sep=";", index_col='date', parse_dates=['date'], dayfirst=True)
 dataset = dataset.sort_index()
 
-"""NOS BASAREMOS EN EL PRECIO MAS ALTO DE LA ACCIÓN (COLUMNA 'High')"""
+""" 
+AQUI SE SELECCIONA EL CONJUNTO DE ENTRENAMIENTO Y EL CONJUNTO DE PRUEBA 
+NOS BASAREMOS EN EL PRECIO MAS ALTO DE LA ACCIÓN (COLUMNA 'High')
+"""
 trainingSet = dataset['2022':].iloc[:, [False, False, True, False, False, False]]
 testSet = dataset[:'2023'].iloc[:, [False, False, True, False, False, False]]
 
@@ -27,8 +23,10 @@ trainingSetScaled = sc.fit_transform(trainingSet)
 
 """SE ENTRENA LA RED PROPORCIONANDO 100 DATOS DE ENTRADA Y 1 DE SALIDA EN CADA ITERACION"""
 timeSteps = 100
+
 """lista de listas"""
 xTrain = []
+
 """valores de salida"""
 yTrain = []
 
@@ -37,11 +35,9 @@ for i in range(0, len(trainingSetScaled)-timeSteps):
     yTrain.append(trainingSetScaled[i+timeSteps,0])
     
 """CONVERTIR ARRAYS EN NUMPY ARRAYS"""
-
 xTrain, yTrain = np.array(xTrain), np.array(yTrain)
 
 """xTrain de dos dimensiones a tres dimensiones para que pueda ser tratado por keras"""
-
 xTrain = np.reshape(xTrain, (xTrain.shape[0], xTrain.shape[1], 1))
 
 """PARAMETROS A PROPORCIONAR A KERAS"""
@@ -84,4 +80,15 @@ prediccion = regresor.predict(xTest)
 """DESESCALAMOS LA PREDICCION PARA QUE SE ENCUENTRE ENTRE VALORES NORMALES"""
 prediccion = sc.inverse_transform(prediccion)
 
+
+""" FUNCION PARA GRAFICAR LOS RESULTADOS DE LAS PREDICCIONES """
+def visualizar(real, prediccion):
+    plt.plot(real[0:len(prediccion)], color='red', label='Precio maximo real de la accion')
+    plt.plot(prediccion, color='blue', label='Prediccion de la accion')
+    plt.xlabel('Tiempo')
+    plt.ylabel('Precio de la accion')
+    plt.legend()
+    plt.show()
+
+""" LLAMANDO A LA FUNCION CON LOS VALORES REALES DEL CONJUNTO DE PRUEBA Y LAS PREDICCIONES REALIZADAS """
 visualizar(testSet.values,prediccion)
